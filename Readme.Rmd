@@ -5,10 +5,47 @@ date: "2024-09-19"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
-## R Markdown
-
 # Read Me
+
+## Description of the project 
+A survey given to second year students in their Advanced Data Analysis class was analyzed.We explored and managed the data. Additionally, we aimed to see how many people were born in each season and how many liked cats. The code and dataset were uploaded on Github.
+
+## Describing the code 
+This R code processes a data set to explore how many students were born in each season and how many liked cats. 
+
+The name of the data set is Class1_survey.
+Source: Survey
+Pacman packages were loaded.
+Results were displayed in tables. 
+
+## Describing the data set
+The data set has 29 observations and 28 variables.
+The vairables are :
+1.id
+2. like_cats # whether they liked cats
+3.like_dogs # whether they liked dogs
+4.have_desert # 1 item they would have with them in a desert
+5.slogan # what is their slogan
+6.fav_day # what is their fav day
+7.larkORowl # are they morning or night owls
+8.fav_food
+9.fav_drink
+10.fav_season
+11.fav_month
+12.hobby
+13.program
+14.specialization
+15.stat_software # The software they tend to use
+16.R_exp # Rate their R level of experience.
+17.coding_comfort # how comfortable they are with coding
+18.coding_length # how long they have been coding
+19.top_three # Top 3 goals for this class
+20.public_health_interest 
+21.fav_num
+22.bday
+23.bmonth
+24.country
+25.state
+26.city
+27.highest_educ_level
+28.bseason 
