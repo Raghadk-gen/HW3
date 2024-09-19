@@ -1,0 +1,190 @@
+---
+title: "First ADA assignment"
+author: "Raghad"
+date: "2024-08-28"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Loading Packages
+
+pacman::p_load(haven, readr, dplyr, openxlsx)
+```
+
+1. Import class one survey data from our Github site (https://github.com/kijohnson/ADA-2024) (The dataset is called ‘Class 1 Survey Fall 2024_di.csv’), calling the R dataframe that you create C1survey.
+
+```{r}
+class1_survey <-
+ read_csv("https://raw.githubusercontent.com/kijohnson/ADA-2024/main/Class%201%20(Getting%20started%20and%20RR%20I)/Lab/Class%201%20Survey%20Fall%202024_di.csv")
+```
+2. Determine: a. the number of observations (i.e. the number of people who filled out the survey) and b. the number of variables in the dataframe.
+
+There are 29 observations and 27 variables. 
+```{r}
+dim(class1_survey)
+```
+```{r}
+str(class1_survey)
+```
+
+
+3. a. Rename the column variables to something shorter and that is descriptive of what the variable is about (for example like_dogs for the ‘Do you like dogs?’ question variable) and b. Display that they are renamed.
+
+```{r}
+
+names(class1_survey)[1:27]<-c("id", "like_cats", "like_dogs", "have_desert", "slogan",
+"fav_day", "larkORowl", "fav_food", "fav_drink", "fav_season", "fav_month", "hobby",
+"program", "specialization", "stat_software", "R_exp", "coding_comfort", "coding_length",
+"top_three","public_health_interest", "fav_num", "bday", "bmonth", "country", "state",
+"city", "highest_educ_level")
+```
+```{r}
+colnames(class1_survey)
+
+```
+4. Write code to determine and display the number of factor, integer, numerical, and character variables there are in the C1survey dataset.
+```{r}
+# Determine the class of each column
+column_classes <- sapply(class1_survey, class)
+```
+
+```{r}
+# Count occurrences of each type
+num_factors <- sum(column_classes == "factor")
+num_integers <- sum(column_classes == "integer")
+num_numerics <- sum(column_classes == "numeric")
+num_characters <- sum(column_classes == "character")
+```
+
+```{r}
+# Display the counts
+cat("Number of factor variables: ", num_factors, "\n")
+cat("Number of integer variables: ", num_integers, "\n")
+cat("Number of numeric variables: ", num_numerics, "\n")
+cat("Number of character variables: ", num_characters, "\n")
+```
+5. a. Using code, check the bday and bmonth variables for any unusual or missing values. If you find any, b. describe what you will do with the unusual values in a comment before or immediately following the code that does it, and c. after you have cleaned up any unusual values, find the median bday and month. *Note: please make sure that your bday and month variables are numeric before doing statistics
+
+ I would first change the characters in both columns into the numeric value. For example March can be changed into 3 and the day March 21st can be simply changed to 21. After that I would change the class of the columns into numeric in order to find the median. 
+
+```{r}
+# Replace "March 31" with "31" in the 'bday' column
+class1_survey$bday <- gsub("March 31st", "31", class1_survey$bday)
+class1_survey$bday <- gsub("May 21-report 21", "21", class1_survey$bday)
+```
+
+```{r}
+# Replacing text in the bmonth column
+class1_survey$bmonth <- gsub("March", "3", class1_survey$bmonth)
+class1_survey$bmonth <- gsub("September", "9", class1_survey$bmonth)
+class1_survey$bmonth <- gsub("February", "2", class1_survey$bmonth)
+class1_survey$bmonth <- gsub("May 21-report 5", "5", class1_survey$bmonth)
+class1_survey$bmonth <- gsub("July", "7", class1_survey$bmonth)
+
+```
+
+```{r}
+# Changing the classes of bmonth and bday from Character to numeric to get the median
+
+class1_survey$bday <- as.numeric(class1_survey$bday)
+class1_survey$bmonth <- as.numeric(class1_survey$bmonth)
+```
+
+
+```{r}
+
+# Calculate the median of 'bday'
+median_bday <- median(class1_survey$bday, na.rm = TRUE)
+
+# Calculate the median of 'bmonth'
+median_bmonth <- median(class1_survey$bmonth, na.rm = TRUE)
+
+# Display the median values
+cat("Median of bday: ", median_bday, "\n")
+cat("Median of bmonth: ", median_bmonth, "\n")
+```
+6. a. Create a new variable called bseason that gives the season according to Northern Meteorological season in which respondents were born (winter = 12/1 to 2/29, spring = 3/1 to 5/31, summer = 6/1 to 8/31, fall = 9/1 to 11/30). b. Using the table function, print a table of Seasons in the columns and bmonths in the rows that allows you to check that the coding is correct c. Sum the columns using the addmargins function to answer the question of how many classmates were born in each season? Include your answer in the code.
+
+```{r}
+# Define the function to map months to seasons
+get_season <- function(month) {
+  if (month %in% c(12, 1, 2)) {
+    return("Winter")
+  } else if (month %in% c(3, 4, 5)) {
+    return("Spring")
+  } else if (month %in% c(6, 7, 8)) {
+    return("Summer")
+  } else if (month %in% c(9, 10, 11)) {
+    return("Fall")
+  } else {
+    return(NA)  # Handle unexpected values
+  }
+}
+
+```
+
+```{r}
+# Apply the function to create 'bseason' column
+class1_survey$bseason <- sapply(class1_survey$bmonth, get_season)
+
+```
+
+```{r}
+# Create a table with bmonths as rows and bseason as columns
+season_table <- table(class1_survey$bmonth, class1_survey$bseason)
+
+# Print the table
+cat("Table of bmonth vs. bseason:\n")
+print(season_table)
+
+```
+
+```{r}
+# Use dplyr to summarize the number of people in each season
+season_summary <- class1_survey %>%
+  group_by(bseason) %>%
+  summarize(Count = n())
+# Print the season summary
+cat("Total number of classmates born in each season:\n")
+print(season_summary)
+
+```
+Four were born in the Fall, Nine in the Spring, eight in the Summer and eight were born in the winter. 
+
+7. Pick your favorite variable or variables to analyze, come up with a question you want to answer with that variable or variables, generate the code, and provide an answer to your question. Describe what you did using comments (i.e. #’s).
+
+
+```{r}
+# How many of my classmates like cats. I will be using like_cats 
+# Check unique values in like_cats
+unique(class1_survey$like_cats)
+
+library(dplyr)
+
+```
+```{r}
+filtered_data <- class1_survey %>%
+  filter(!is.na(like_cats))
+
+yes_cats_count <- filtered_data %>%
+  filter(like_cats == "Yes") %>%
+  summarise(count = n())
+
+# Display the result
+print(yes_cats_count)
+
+```
+```{r}
+yescat_summary <- class1_survey %>%
+  group_by(like_cats) %>%
+  summarize(Count = n())
+# Print the season summary
+cat("Total number of classmates who like cats:\n")
+print(yescat_summary)
+```
+
+
